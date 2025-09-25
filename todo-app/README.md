@@ -15,6 +15,6 @@ To do list:
 - ✅ Test the API using Swagger UI
 - ✅ Implement Alembic for database migrations
 - ✅ Hash passwords for user authentication
-- ⬜ Implement user authentication using OAuth2 and JWT
+- ✅ Implement user authentication using OAuth2 and JWT
 - ⬜ Autorization for users to access their own todos
 - ⬜ ....

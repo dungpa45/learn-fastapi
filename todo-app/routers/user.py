@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+from database import get_db
 from models.base import User, Company
 from schemas import user as schemas_user
-from database import get_db
-from passlib.context import CryptContext
+from utils.auth_user import get_current_user
 
 router = APIRouter(
     prefix="/users",
@@ -49,6 +50,12 @@ def list_users(db: Session = Depends(get_db)):
     return db.query(User).all()
 #==========================
 
+# get me
+@router.get("/me", response_model=schemas_user.User)
+async def get_me(current_user: schemas_user.User = Depends(get_current_user)):
+    return current_user
+#==========================
+
 # Get User by ID
 @router.get("/{user_id}", response_model=schemas_user.User)
 def get_user(user_id: int, db: Session = Depends(get_db)):
@@ -56,5 +63,3 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     if not user:
         raise HTTPException(404, detail="User not found")
     return user
-#==========================
-

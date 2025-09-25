@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from models.base import Task, User
 from schemas import task as schemas_task
 from database import get_db
-from passlib.context import CryptContext
 
 router = APIRouter(
     prefix="/tasks",

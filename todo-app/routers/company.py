@@ -3,7 +3,6 @@ from sqlalchemy.orm import Session
 from models.base import Company
 from schemas import company as schemas_company
 from database import get_db
-from passlib.context import CryptContext
 
 router = APIRouter(
     prefix="/companies",

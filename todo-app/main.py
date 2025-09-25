@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routers import user, company, task
+from routers import user, company, task, auth
 from database import engine, Base
 
 from passlib.context import CryptContext
@@ -18,3 +18,4 @@ Base.metadata.create_all(bind=engine)  # create tables
 app.include_router(user.router)
 app.include_router(company.router)
 app.include_router(task.router)
+app.include_router(auth.router)
