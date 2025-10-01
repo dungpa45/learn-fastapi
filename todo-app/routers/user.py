@@ -1,3 +1,4 @@
+'''User Router: Handles CRUD operations for User entity'''
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from passlib.context import CryptContext
@@ -16,8 +17,10 @@ router = APIRouter(
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Create User
-@router.post("/", response_model=schemas_user.User,status_code=status.HTTP_200_OK)
+@router.post("/", response_model=schemas_user.UserResponse,status_code=status.HTTP_200_OK)
 async def create_user(user: schemas_user.UserCreate, db: Session = Depends(get_db)):
+    ''' Create a new user who must belong to a company, 
+    and the email and username must be unique '''
     # Check company first
     db_company = db.query(Company).filter(Company.id == user.company_id).first()
     if not db_company:
@@ -27,16 +30,16 @@ async def create_user(user: schemas_user.UserCreate, db: Session = Depends(get_d
     db_user = db.query(User).filter(User.username == user.username).first()
     if db_user:
         raise HTTPException(400, detail="Username already registered")
-    
+
     # Check if email exists
     db_email = db.query(User).filter(User.email == user.email).first()
     if db_email:
         raise HTTPException(400, detail="Email already registered")
-    
+
     hashed_pw = pwd_context.hash(user.password)
     new_user = User(
-        username=user.username, 
-        email=user.email, 
+        username=user.username,
+        email=user.email,
         password=hashed_pw,
         first_name=user.first_name,
         last_name=user.last_name,
@@ -51,20 +54,23 @@ async def create_user(user: schemas_user.UserCreate, db: Session = Depends(get_d
 #==========================
 
 # List Users
-@router.get("/", response_model=list[schemas_user.User])
+@router.get("/", response_model=list[schemas_user.UserResponse])
 async def list_users(db: Session = Depends(get_db)):
+    ''' List all users '''
     return db.query(User).all()
 #==========================
 
 # get me
-@router.get("/me", response_model=schemas_user.User)
+@router.get("/me", response_model=schemas_user.UserResponse)
 async def get_me(current_user: schemas_user.User = Depends(get_current_user)):
+    ''' Get current logged-in user details '''
     return current_user
 #==========================
 
 # Get User by ID
-@router.get("/{user_id}", response_model=schemas_user.User)
+@router.get("/{user_id}", response_model=schemas_user.UserResponse)
 async def get_user(user_id: int, db: Session = Depends(get_db)):
+    ''' Get user details by User ID '''
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(404, detail="User not found")
@@ -72,13 +78,15 @@ async def get_user(user_id: int, db: Session = Depends(get_db)):
 #==========================
 
 # Update User
-@router.put("/{user_id}", response_model=schemas_user.User,status_code=status.HTTP_200_OK)
+@router.put("/{user_id}", response_model=schemas_user.UserResponse,status_code=status.HTTP_200_OK)
 def update_user(user_id: int, user: schemas_user.UserUpdate, db: Session = Depends(get_db)):
+    ''' Update user details '''
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(404, detail="User not found")
-    for key, value in user.model_dump().items():
-        setattr(db_user, key, value)
+    for key, value in user.model_dump(exclude_unset=True).items():
+        if value is not None:
+            setattr(db_user, key, value)
     db.commit()
     db.refresh(db_user)
     return db_user
@@ -87,10 +95,22 @@ def update_user(user_id: int, user: schemas_user.UserUpdate, db: Session = Depen
 # Delete User
 @router.delete("/{user_id}", status_code=status.HTTP_200_OK)
 def delete_user(user_id: int, db: Session = Depends(get_db)):
+    ''' Delete a user with ID'''
     db_user = db.query(User).filter(User.id == user_id).first()
     if not db_user:
         raise HTTPException(404, detail="User not found")
-    user_data = schemas_user.User.from_orm(db_user)
+    # Convert SQLAlchemy model to dict with proper type conversion
+    user_dict = {
+        "id": db_user.id,
+        "username": db_user.username,
+        "email": db_user.email,
+        "first_name": db_user.first_name,
+        "last_name": db_user.last_name,
+        "is_active": bool(db_user.is_active),  # Convert int to bool
+        "is_admin": bool(db_user.is_admin),    # Convert int to bool
+        "company_id": db_user.company_id
+    }
+    user_data = schemas_user.UserResponse(**user_dict)
     db.delete(db_user)
     db.commit()
     return {

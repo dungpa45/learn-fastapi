@@ -1,3 +1,4 @@
+'''Task Router: Handles CRUD operations for Task entity'''
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
@@ -15,6 +16,7 @@ router = APIRouter(
 
 @router.post("/", response_model=schemas_task.Task,status_code=status.HTTP_200_OK)
 async def create_task(task: schemas_task.TaskCreate, db: Session = Depends(get_db)):
+    ''' Create a new task and ensure the user exists '''
     # check user exists
     db_user = db.query(User).filter(User.id == task.user_id).first()
     if not db_user:
@@ -32,26 +34,30 @@ async def create_task(task: schemas_task.TaskCreate, db: Session = Depends(get_d
 # List Tasks
 @router.get("/", response_model=list[schemas_task.Task])
 async def list_tasks(db: Session = Depends(get_db)):
+    ''' List all tasks '''
     return db.query(Task).all()
 #==========================
 
 # Get All Task by User ID
 @router.get("/user/{user_id}", response_model=list[schemas_task.Task])
-async def get_tasks_by_userID(user_id: int, db: Session = Depends(get_db)):
+async def get_tasks_by_user_id(user_id: int, db: Session = Depends(get_db)):
+    ''' Get all tasks by User ID '''
     return db.query(Task).filter(Task.user_id == user_id).all()
 #==========================
 
 # Get Task by ID
 @router.get("/{task_id}", response_model=schemas_task.Task, status_code=status.HTTP_200_OK)
 async def get_task(task_id: int, db: Session = Depends(get_db)):
+    ''' Get task details by Task ID '''
     db_task = db.query(Task).filter(Task.id == task_id).first()
     if not db_task:
-        raise HTTPException(400, detail="task not exists")
+        raise HTTPException(404, detail="task not exists")
     return db_task
 
 # Update Task
 @router.put("/{task_id}", response_model=schemas_task.Task,status_code=status.HTTP_200_OK)
 def update_task(task_id: int, task: schemas_task.TaskUpdate, db: Session = Depends(get_db)):
+    ''' Update task details '''
     db_task = db.query(Task).filter(Task.id == task_id).first()
     if not db_task:
         raise HTTPException(400, detail="task not exists")
@@ -65,6 +71,7 @@ def update_task(task_id: int, task: schemas_task.TaskUpdate, db: Session = Depen
 # Delete Task
 @router.delete("/{task_id}", status_code=status.HTTP_200_OK)
 def delete_task(task_id: int, db: Session = Depends(get_db)):
+    ''' Delete a task with ID'''
     db_task = db.query(Task).filter(Task.id == task_id).first()
     if not db_task:
         raise HTTPException(404, detail="Task ID not found")

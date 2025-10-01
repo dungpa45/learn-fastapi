@@ -1,9 +1,11 @@
+''' SQLAlchemy models for User, Task, and Company '''
 from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
 from sqlalchemy.orm import relationship
 
 # ----------------------
 class Company(Base):
+    ''' Company model representing a company entity, with relationship to users '''
     __tablename__ = "companies"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -15,6 +17,7 @@ class Company(Base):
     users = relationship("User", back_populates="company")
 
 class User(Base):
+    ''' User model representing application users, with relationships to tasks and company '''
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -33,6 +36,7 @@ class User(Base):
 
 # ----------------------
 class Task(Base):
+    ''' Task model representing tasks assigned to users, with relationship to user '''
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True, index=True)

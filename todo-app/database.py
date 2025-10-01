@@ -2,7 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 
 # SQLite URL
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"  # file-based
+SQLALCHEMY_DATABASE_URL = "sqlite:///./todo-db.db"  # file-based
 # For memory-only DB: "sqlite:///:memory:"
 
 engine = create_engine(

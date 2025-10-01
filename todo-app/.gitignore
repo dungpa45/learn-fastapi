@@ -9,6 +9,8 @@ venv/
 .env
 .venv
 ENV/
+.pylintrc
+.pytest_cache/
 
 # FastAPI
 .env
