@@ -1,0 +1,7 @@
+[run]
+source = .
+omit = tests/*,versions/*,alembic/*
+command_line = -m pytest tests/ --no-cov
+
+[report]
+omit = tests/*,versions/*,alembic/*

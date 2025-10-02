@@ -21,7 +21,7 @@ async def create_task(task: schemas_task.TaskCreate, db: Session = Depends(get_d
     db_user = db.query(User).filter(User.id == task.user_id).first()
     if not db_user:
         raise HTTPException(400, detail="User does not exist")
-    db_task = Task(**task.dict())
+    db_task = Task(**task.model_dump())
     if not db_task:
         raise HTTPException(400, detail="task not exists")
 

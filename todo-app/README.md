@@ -154,3 +154,46 @@ curl -X POST "http://localhost:8000/tasks/" \
        "user_id": 1
      }'
 ```
+
+## Testing
+
+The application includes comprehensive test coverage using pytest.
+
+Using `pytest.ini` configuration for test discovery and coverage reporting and `.coveragerc` for coverage settings.
+
+### Running Tests
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_user.py
+
+```
+
+### Coverage Reports
+
+```bash
+# Generate coverage report using coverage.py
+coverage run && coverage report
+
+# Generate HTML coverage report
+coverage html
+```
+
+### Test Structure
+
+- `tests/conftest.py` - Test configuration and fixtures
+- `tests/test_user.py` - User endpoint tests
+- `tests/test_task.py` - Task endpoint tests  
+- `tests/test_company.py` - Company endpoint tests
+- `tests/test_auth_user.py` - Authentication utility tests
+
+### Test Features
+
+- **Database Isolation** - Each test uses a fresh database
+- **Authentication Testing** - JWT token validation and protected endpoints
+- **CRUD Operations** - Complete create, read, update, delete testing
+- **Error Handling** - Invalid input and edge case testing
+- **Mock Testing** - External dependencies mocked for unit tests
