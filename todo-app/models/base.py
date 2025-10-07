@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey
 from database import Base
 from sqlalchemy.orm import relationship
 
-# ----------------------
+
 class Company(Base):
     ''' Company model representing a company entity, with relationship to users '''
     __tablename__ = "companies"
@@ -15,6 +15,7 @@ class Company(Base):
     rating = Column(Integer)  # e.g., 1 (low) to 5 (high)
     # relationships to User
     users = relationship("User", back_populates="company")
+
 
 class User(Base):
     ''' User model representing application users, with relationships to tasks and company '''
@@ -34,9 +35,10 @@ class User(Base):
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)  # foreign key to Company
     company = relationship("Company", back_populates="users")
 
-# ----------------------
+
 class Task(Base):
-    ''' Task model representing tasks assigned to users, with relationship to user '''
+    ''' Task model representing tasks assigned to users, 
+    with relationship to users '''
     __tablename__ = "tasks"
 
     id = Column(Integer, primary_key=True, index=True)

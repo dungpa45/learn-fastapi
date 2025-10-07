@@ -4,5 +4,5 @@ sqlalchemy
 passlib[bcrypt]
 pydantic
 python-multipart
-jose
+python-jose[cryptography]
 pytest

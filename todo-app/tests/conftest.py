@@ -9,8 +9,16 @@ from passlib.context import CryptContext
 
 # Test database setup
 SQLALCHEMY_DATABASE_URL = "sqlite:///./test.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
-TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+engine = create_engine(
+    SQLALCHEMY_DATABASE_URL,
+    connect_args={"check_same_thread": False}
+)
+TestingSessionLocal = sessionmaker(
+    autocommit=False,
+    autoflush=False,
+    bind=engine
+)
+
 
 def override_get_db():
     try:
@@ -19,15 +27,18 @@ def override_get_db():
     finally:
         db.close()
 
+
 app.dependency_overrides[get_db] = override_get_db
 client = TestClient(app)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-@pytest.fixture(autouse=True,scope="function")
+
+@pytest.fixture(autouse=True, scope="function")
 def setup_database():
     Base.metadata.create_all(bind=engine)
     yield
     Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture
 def test_company(setup_database):
@@ -43,6 +54,7 @@ def test_company(setup_database):
     db.refresh(company)
     db.close()
     return company
+
 
 @pytest.fixture
 def test_user(setup_database, test_company):
@@ -63,6 +75,7 @@ def test_user(setup_database, test_company):
     db.refresh(user)
     db.close()
     return user
+
 
 @pytest.fixture
 def test_task(setup_database, test_user):

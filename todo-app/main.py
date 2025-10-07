@@ -2,9 +2,6 @@ from fastapi import FastAPI
 from routers import user, company, task, auth
 from database import engine, Base
 
-from passlib.context import CryptContext
-
-
 app = FastAPI(
     title="To-do API",
     description="A simple FastAPI for managing to-do tasks with users and companies.",
